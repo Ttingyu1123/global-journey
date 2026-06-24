@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Journey: City Relief Prompt Generator</title>
+<meta name="description" content="環球旅程：城市浮雕之旅 — 33 個世界地標的 3D 浮雕袖珍模型 Prompt 生成器">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --linen:#EDE0CC;--linen-dark:#E2D4BE;--cream:#F5EDE0;
+  --forest:#4D7E7A;--forest-deep:#3E6B67;--forest-mist:rgba(77,126,122,0.08);
+  --sienna:#A67C52;--sienna-hover:#8F6B47;--sienna-pressed:#7A5B3C;--sienna-light:rgba(166,124,82,0.12);
+  --gold:#C4A872;--gold-dim:rgba(196,168,114,0.35);
+  --ink:#4A4038;--ink-muted:#6B6058;--ink-light:#8A7F77;
+  --inverse:#FAF4E8;--inverse-muted:#E0D5C4;
+  --shadow-1:0 1px 3px rgba(74,64,56,0.06);
+  --shadow-2:0 2px 8px rgba(74,64,56,0.08);
+  --shadow-3:0 4px 16px rgba(74,64,56,0.12);
+  --shadow-4:0 8px 32px rgba(74,64,56,0.15);
+  --radius:4px;
+  --font-display:'Great Vibes',cursive;
+  --font-heading:'Poppins',system-ui,sans-serif;
+  --font-body:'Poppins','Noto Sans TC',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-cjk:'Noto Sans TC',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);color:var(--ink);
+  background-color:var(--linen);
+  background-image:
+    repeating-linear-gradient(0deg,var(--gold-dim) 0 1px,transparent 1px 60px),
+    repeating-linear-gradient(90deg,var(--gold-dim) 0 1px,transparent 1px 60px);
+  line-height:1.7;font-size:16px;
+  min-height:100dvh;
+  position:relative;
+}
+body::before{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;
+  background:url('MAP.png') center center / cover no-repeat fixed;
+  opacity:0.15;pointer-events:none;
+}
+
+/* NAV */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--forest);color:var(--inverse);
+  padding:0 24px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:var(--shadow-3);
+}
+.nav-brand{font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:-0.3px;display:flex;align-items:center;gap:10px}
+.nav-brand svg{width:24px;height:24px;fill:var(--gold)}
+.nav-actions{display:flex;align-items:center;gap:12px}
+.nav-key-btn{
+  background:transparent;border:1px solid var(--inverse-muted);color:var(--inverse);
+  padding:6px 14px;border-radius:var(--radius);cursor:pointer;
+  font:500 13px var(--font-body);transition:all 0.2s;
+}
+.nav-key-btn:hover{background:rgba(245,236,223,0.12);border-color:var(--inverse)}
+.nav-key-btn.active{background:var(--sienna);border-color:var(--sienna);color:#fff}
+
+/* HERO */
+.hero{
+  text-align:center;padding:64px 24px 48px;position:relative;overflow:hidden;
+}
+.hero-compass{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  opacity:0.06;width:500px;height:500px;pointer-events:none;
+}
+.hero-title{
+  font-family:var(--font-display);font-size:clamp(36px,8vw,56px);
+  color:var(--sienna);line-height:1.2;margin-bottom:8px;position:relative;
+}
+.hero-subtitle{
+  font-family:var(--font-heading);font-size:clamp(16px,2.5vw,20px);font-weight:500;
+  color:var(--ink-muted);margin-bottom:8px;position:relative;
+}
+.hero-desc{
+  font-size:15px;color:var(--ink-light);max-width:600px;margin:0 auto;position:relative;
+}
+.divider{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  margin:32px auto;max-width:300px;
+}
+.divider-line{width:80px;height:2px;background:var(--gold)}
+.divider-dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+
+/* API KEY PANEL */
+.key-panel{
+  max-width:500px;margin:0 auto 32px;
+  background:var(--cream);border:1px solid var(--gold);border-radius:var(--radius);
+  padding:20px 24px;
+  display:none;
+}
+.key-panel.show{display:block}
+.key-panel h3{font-size:15px;font-weight:600;margin-bottom:12px;color:var(--forest)}
+.key-row{display:flex;gap:8px;margin-bottom:8px}
+.key-input{
+  flex:1;padding:10px 14px;border:1px solid var(--gold);border-radius:var(--radius);
+  font:400 14px var(--font-mono);color:var(--ink);background:var(--linen);
+}
+.key-input:focus{outline:none;border-color:var(--sienna);box-shadow:0 0 0 3px rgba(174,87,27,0.12)}
+.key-input::placeholder{color:var(--ink-light)}
+.key-save-btn{
+  padding:10px 18px;background:var(--sienna);color:#fff;border:none;
+  border-radius:var(--radius);cursor:pointer;font:600 13px var(--font-body);
+  transition:background 0.2s;white-space:nowrap;
+}
+.key-save-btn:hover{background:var(--sienna-hover)}
+.key-remember{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-muted)}
+.key-remember input{accent-color:var(--sienna)}
+.key-status{font-size:13px;margin-top:8px;color:var(--ink-light)}
+.key-status.ok{color:#5A8A6A}
+.key-status.err{color:#B85C5C}
+
+/* CONTINENT TABS */
+.continent-bar{
+  display:flex;gap:8px;padding:0 24px 24px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  max-width:900px;margin:0 auto;justify-content:center;flex-wrap:wrap;
+}
+.continent-bar::-webkit-scrollbar{display:none}
+.continent-pill{
+  padding:8px 18px;border-radius:20px;cursor:pointer;
+  font:600 13px var(--font-body);letter-spacing:0.3px;
+  border:1px solid var(--gold);background:var(--cream);color:var(--ink);
+  transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:6px;
+  user-select:none;
+}
+.continent-pill:hover{border-color:var(--sienna);color:var(--sienna)}
+.continent-pill.active{background:var(--sienna);color:#fff;border-color:var(--sienna)}
+.continent-pill .count{
+  font-size:11px;font-weight:700;
+  background:rgba(35,72,51,0.1);color:var(--ink-muted);
+  width:22px;height:22px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.continent-pill.active .count{background:rgba(255,255,255,0.25);color:#fff}
+
+/* SEARCH */
+.search-bar{
+  max-width:500px;margin:0 auto 32px;padding:0 24px;
+}
+.search-input{
+  width:100%;padding:12px 16px 12px 42px;
+  border:1px solid var(--gold);border-radius:var(--radius);
+  font:400 15px var(--font-body);color:var(--ink);background:var(--cream);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%237A8F80' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:14px center;
+}
+.search-input:focus{outline:none;border-color:var(--sienna);box-shadow:0 0 0 3px rgba(174,87,27,0.12)}
+
+/* CARDS GRID */
+.cards-section{max-width:1100px;margin:0 auto;padding:0 24px 48px}
+.cards-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:20px;
+}
+.card{
+  background:var(--cream);border:1px solid var(--gold);border-radius:var(--radius);
+  box-shadow:var(--shadow-2);transition:all 0.25s;cursor:pointer;overflow:hidden;
+}
+.card:hover{box-shadow:var(--shadow-3);transform:translateY(-2px)}
+.card-header{padding:18px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.card-num{
+  font:700 13px var(--font-mono);color:var(--sienna);
+  background:var(--sienna-light);padding:2px 8px;border-radius:var(--radius);
+  flex-shrink:0;
+}
+.card-info{flex:1}
+.card-name-en{font:600 16px var(--font-heading);color:var(--forest);line-height:1.3}
+.card-name-zh{font:400 14px var(--font-cjk);color:var(--ink-muted);margin-top:2px}
+.card-location{font:400 13px var(--font-body);color:var(--ink-light);margin-top:4px}
+.card-chevron{
+  width:24px;height:24px;flex-shrink:0;transition:transform 0.3s;
+  color:var(--ink-light);margin-top:2px;
+}
+.card.open .card-chevron{transform:rotate(180deg)}
+
+.card-detail{
+  display:grid;grid-template-rows:0fr;transition:grid-template-rows 0.35s ease;
+}
+.card.open .card-detail{grid-template-rows:1fr}
+.card-detail-inner{overflow:hidden}
+.card-detail-content{
+  padding:0 20px 20px;border-top:1px solid var(--gold);
+}
+
+.prompt-section{margin-top:16px}
+.prompt-label{
+  font:600 12px var(--font-body);letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--sienna);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;
+}
+.prompt-text{
+  font:400 13px/1.7 var(--font-mono);color:var(--ink);
+  background:var(--linen);border:1px solid var(--gold-dim);border-radius:var(--radius);
+  padding:12px 14px;word-break:break-word;position:relative;
+}
+.prompt-text-zh{
+  font:400 14px/1.8 var(--font-cjk);color:var(--ink-muted);
+  padding:10px 14px;background:var(--forest-mist);border-radius:var(--radius);
+  margin-top:6px;
+}
+.prompt-text-anim{
+  font:400 14px/1.8 var(--font-cjk);color:var(--forest);
+  padding:10px 14px;background:linear-gradient(135deg,var(--sienna-light),rgba(232,213,168,0.15));
+  border:1px solid var(--gold-dim);border-radius:var(--radius);margin-top:6px;
+}
+
+.copy-btn{
+  background:transparent;border:1px solid var(--gold);border-radius:var(--radius);
+  padding:3px 10px;cursor:pointer;font:500 11px var(--font-body);
+  color:var(--ink-muted);transition:all 0.2s;display:inline-flex;align-items:center;gap:4px;
+}
+.copy-btn:hover{border-color:var(--sienna);color:var(--sienna)}
+.copy-btn.copied{background:var(--sienna);color:#fff;border-color:var(--sienna)}
+
+/* AI GENERATOR */
+.gen-section{
+  max-width:700px;margin:0 auto 48px;padding:0 24px;
+}
+.gen-box{
+  background:var(--forest);border-radius:var(--radius);padding:32px;
+  color:var(--inverse);box-shadow:var(--shadow-4);
+}
+.gen-box h2{
+  font:400 clamp(28px,5vw,36px) var(--font-display);color:var(--gold);margin-bottom:4px;
+}
+.gen-box p{font-size:15px;color:var(--inverse);opacity:0.85;margin-bottom:20px}
+.gen-input-row{display:flex;gap:8px;margin-bottom:16px}
+.gen-input{
+  flex:1;padding:12px 16px;border:1px solid rgba(250,244,232,0.3);
+  border-radius:var(--radius);font:400 15px var(--font-body);
+  color:var(--inverse);background:rgba(255,255,255,0.08);
+}
+.gen-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,213,168,0.15)}
+.gen-input::placeholder{color:var(--inverse-muted)}
+.gen-btn{
+  padding:12px 24px;background:var(--sienna);color:#fff;border:none;
+  border-radius:var(--radius);cursor:pointer;font:600 14px var(--font-body);
+  transition:background 0.2s;white-space:nowrap;
+}
+.gen-btn:hover{background:var(--sienna-hover)}
+.gen-btn:disabled{opacity:0.5;cursor:not-allowed}
+.gen-notice{font-size:13px;color:var(--inverse);opacity:0.75;margin-bottom:16px}
+.gen-notice a{color:var(--gold);text-decoration:underline}
+.gen-result{margin-top:20px}
+.gen-loading{
+  text-align:center;padding:24px;color:var(--gold);font-size:14px;
+}
+.gen-loading .spinner{
+  display:inline-block;width:24px;height:24px;border:3px solid var(--gold-dim);
+  border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;
+  margin-bottom:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gen-error{color:#B85C5C;font-size:14px;padding:12px;background:rgba(184,92,92,0.1);border-radius:var(--radius);margin-top:12px}
+
+.gen-result-card{
+  background:rgba(245,236,223,0.1);border:1px solid rgba(232,213,168,0.25);
+  border-radius:var(--radius);padding:20px;margin-top:16px;
+}
+.gen-result-card .prompt-label{color:var(--gold)}
+.gen-result-card .prompt-text{background:rgba(255,255,255,0.06);border-color:rgba(232,213,168,0.2);color:var(--inverse)}
+.gen-result-card .prompt-text-zh{background:rgba(255,255,255,0.04);color:var(--inverse-muted)}
+.gen-result-card .prompt-text-anim{background:rgba(174,87,27,0.15);border-color:rgba(232,213,168,0.2);color:var(--inverse)}
+.gen-result-card .copy-btn{border-color:rgba(232,213,168,0.3);color:var(--inverse-muted)}
+.gen-result-card .copy-btn:hover{border-color:var(--gold);color:var(--gold)}
+.gen-result-card .copy-btn.copied{background:var(--sienna);color:#fff;border-color:var(--sienna)}
+
+/* VIDEO TRANSITION */
+.video-section{
+  max-width:700px;margin:0 auto 64px;padding:0 24px;
+}
+.video-box{
+  background:var(--cream);border:1px solid var(--gold);border-radius:var(--radius);
+  padding:28px;box-shadow:var(--shadow-2);
+}
+.video-box h2{font:600 22px var(--font-heading);color:var(--forest);margin-bottom:4px}
+.video-box>p{font-size:14px;color:var(--ink-muted);margin-bottom:20px}
+.video-selects{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;margin-bottom:16px}
+.video-select-group label{display:block;font:600 12px var(--font-body);letter-spacing:0.5px;text-transform:uppercase;color:var(--sienna);margin-bottom:6px}
+.video-select{
+  width:100%;padding:10px 14px;border:1px solid var(--gold);border-radius:var(--radius);
+  font:400 14px var(--font-body);color:var(--ink);background:var(--linen);
+  cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A8F80' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+.video-select:focus{outline:none;border-color:var(--sienna)}
+.video-arrow{font-size:20px;color:var(--gold);text-align:center;padding-bottom:8px}
+.video-gen-btn{
+  width:100%;padding:12px;background:var(--forest);color:var(--inverse);
+  border:none;border-radius:var(--radius);cursor:pointer;
+  font:600 14px var(--font-body);transition:background 0.2s;
+}
+.video-gen-btn:hover{background:var(--forest-deep)}
+.video-result{margin-top:16px}
+
+/* FOOTER */
+.footer{
+  background:var(--forest);color:var(--inverse);text-align:center;
+  padding:32px 24px;font-size:14px;
+}
+.footer a{color:var(--gold);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.footer-brand{font-family:var(--font-display);font-size:24px;color:var(--gold);margin-bottom:8px}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--forest);color:var(--inverse);padding:10px 20px;
+  border-radius:var(--radius);font:500 14px var(--font-body);
+  box-shadow:var(--shadow-4);transition:transform 0.3s ease;z-index:200;
+  pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* NO RESULTS */
+.no-results{
+  text-align:center;padding:48px 24px;color:var(--ink-light);
+  font-size:15px;grid-column:1/-1;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .cards-grid{grid-template-columns:1fr}
+  .video-selects{grid-template-columns:1fr;gap:8px}
+  .video-arrow{transform:rotate(90deg)}
+  .gen-input-row{flex-direction:column}
+  .hero{padding:48px 20px 32px}
+  .gen-box{padding:24px 20px}
+  .continent-bar{justify-content:flex-start;flex-wrap:nowrap;padding:0 16px 20px}
+}
+@media(max-width:480px){
+  .nav{padding:0 16px}
+  .nav-brand span{display:none}
+  .card-header{padding:14px 16px}
+  .card-detail-content{padding:0 16px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    <span>Global Journey</span>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-key-btn" onclick="toggleKeyPanel()" id="keyToggle">API Key</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <svg class="hero-compass" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="0.5" color="#E8D5A8">
+    <circle cx="200" cy="200" r="190"/><circle cx="200" cy="200" r="150"/><circle cx="200" cy="200" r="100"/>
+    <line x1="200" y1="5" x2="200" y2="395"/><line x1="5" y1="200" x2="395" y2="200"/>
+    <line x1="60" y1="60" x2="340" y2="340"/><line x1="340" y1="60" x2="60" y2="340"/>
+    <polygon points="200,10 210,50 190,50" fill="currentColor" stroke="none"/>
+    <text x="200" y="58" text-anchor="middle" font-size="14" fill="currentColor" stroke="none" font-family="Poppins">N</text>
+    <text x="200" y="360" text-anchor="middle" font-size="14" fill="currentColor" stroke="none" font-family="Poppins">S</text>
+    <text x="358" y="205" text-anchor="middle" font-size="14" fill="currentColor" stroke="none" font-family="Poppins">E</text>
+    <text x="42" y="205" text-anchor="middle" font-size="14" fill="currentColor" stroke="none" font-family="Poppins">W</text>
+  </svg>
+  <h1 class="hero-title">Global Journey</h1>
+  <p class="hero-subtitle">環球旅程：城市浮雕之旅 Prompt Generator</p>
+  <p class="hero-desc">33 個世界地標的 3D 浮雕袖珍模型 Prompt，可直接用於 MidJourney 生圖與 Kling/即夢 動畫製作</p>
+</header>
+
+<div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+<!-- API KEY PANEL -->
+<div class="key-panel" id="keyPanel">
+  <h3>Gemini API Key (BYOK)</h3>
+  <div class="key-row">
+    <input type="password" class="key-input" id="keyInput" placeholder="AIza...">
+    <button class="key-save-btn" onclick="saveApiKey()">Save</button>
+  </div>
+  <label class="key-remember">
+    <input type="checkbox" id="keyRemember" checked> Remember (localStorage)
+  </label>
+  <div class="key-status" id="keyStatus"></div>
+</div>
+
+<!-- CONTINENT TABS -->
+<div class="continent-bar" id="continentBar"></div>
+
+<!-- SEARCH -->
+<div class="search-bar">
+  <input type="text" class="search-input" id="searchInput" placeholder="Search landmarks...">
+</div>
+
+<!-- CARDS -->
+<section class="cards-section">
+  <div class="cards-grid" id="cardsGrid"></div>
+</section>
+
+<div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+<!-- AI GENERATOR -->
+<section class="gen-section">
+  <div class="gen-box">
+    <h2>Custom Generator</h2>
+    <p>輸入任何景點名稱，AI 自動生成同風格的 3D 浮雕 Prompt</p>
+    <p class="gen-notice">需要 Gemini API Key，請先點擊上方 API Key 按鈕設定</p>
+    <div class="gen-input-row">
+      <input type="text" class="gen-input" id="genInput" placeholder="e.g. Mount Fuji, Machu Picchu, Santorini...">
+      <button class="gen-btn" id="genBtn" onclick="generatePrompt()">Generate</button>
+    </div>
+    <div class="gen-result" id="genResult"></div>
+  </div>
+</section>
+
+<div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+<!-- VIDEO TRANSITION -->
+<section class="video-section">
+  <div class="video-box">
+    <h2>Dynamic Video Transition</h2>
+    <p>選擇起點與終點地標，生成一鏡到底的動畫過場 Prompt（適用 Kling / 即夢）</p>
+    <div class="video-selects">
+      <div class="video-select-group">
+        <label>From</label>
+        <select class="video-select" id="videoFrom"></select>
+      </div>
+      <div class="video-arrow">&#10132;</div>
+      <div class="video-select-group">
+        <label>To</label>
+        <select class="video-select" id="videoTo"></select>
+      </div>
+    </div>
+    <button class="video-gen-btn" onclick="generateTransition()">Generate Transition Prompt</button>
+    <div class="video-result" id="videoResult"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-brand">TingYu's AI Art</div>
+  <p>Global Journey: City Relief Prompt Generator</p>
+  <p style="margin-top:8px;color:var(--inverse-muted);font-size:13px">Built with Artisan Earth Design System</p>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const LANDMARKS = [
+  // ASIA
+  {id:1,continent:'asia',city:'Taiwan',country:'',nameEn:'World Map Intro',nameZh:'世界地圖開場',
+    promptEn:'a cinematic aerial shot of a vintage-style world map, 3D relief model, on an aged blueprint. intricate lines and faded colors. the camera zooms in fast on the island of Taiwan, then smoothly transitions to the architectural animation. macro photography, miniatures. --ar 16:9 --style raw',
+    promptZh:'一鏡到底，從老式世界地圖的風格化高空視角，3D浮雕模型，在古老的藍圖上。精緻的線條和褪色的色彩。鏡頭快速拉近並聚焦在台灣島上，然後平滑地過渡到建築動畫。微距攝影，微縮模型。',
+    animationPrompt:'一鏡到底，鏡頭從一個風格化的世界地圖高處視角開始，快速縮放並聚焦在台灣島上，接著順暢地接到台北101的建築拔地而起動畫。'},
+  {id:2,continent:'asia',city:'Taipei',country:'Taiwan',nameEn:'Taipei 101',nameZh:'台北101',
+    promptEn:'Taipei, Taiwan: 3D relief model of the Taipei 101 skyscraper, with its iconic stacked-pagoda design, surrounded by a dense, bustling modern cityscape, on an aged blueprint. miniatures, macro photography. Sleek silver and green tones. Futuristic and elegant architecture. --ar 16:9 --style raw',
+    promptZh:'台灣，台北：台北101大樓的3D浮雕模型，搭配其標誌性的堆疊式寶塔設計，周圍是繁華、密集的現代城市景觀，在古老的藍圖上。微縮模型，微距攝影。光滑的銀色和綠色調。未來感和優雅的建築。',
+    animationPrompt:'一鏡到底，鏡頭快速拉近，穿過台北市區的街道，飛越建築物，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:3,continent:'asia',city:'Taipei',country:'Taiwan',nameEn:'Chiang Kai-shek Memorial Hall',nameZh:'中正紀念堂',
+    promptEn:'Taipei, Taiwan: 3D relief model of the Chiang Kai-shek Memorial Hall, with its distinctive blue roof and white walls, surrounded by the main square and gates, on an aged blueprint. Pure white and azure tones. Ornate Chinese architecture, tranquil atmosphere. miniatures, macro photography. --ar 16:9 --style raw',
+    promptZh:'台灣，台北：中正紀念堂的3D浮雕模型，搭配其獨特的藍色屋頂和白色牆壁，周圍是主廣場和牌樓，在古老的藍圖上。純淨的白色和天藍色調。華麗的韓式建築，寧靜的氛圍。',
+    animationPrompt:'一鏡到底，鏡頭快速拉近，穿過台灣中央的山脈和綠色平原，朝著海岸前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:4,continent:'asia',city:'Pingtung',country:'Taiwan',nameEn:'Eluanbi Lighthouse',nameZh:'鵝鑾鼻燈塔',
+    promptEn:'Pingtung, Taiwan: 3D relief model of the Eluanbi Lighthouse, with its distinctive white cylindrical form and strong light beam, located on a cliff overlooking the sea, on an aged blueprint. miniatures, macro photography. Pristine white and dark blue tones. Iconic coastal landmark, elegant structure. --ar 16:9 --style raw',
+    promptZh:'台灣，屏東：鵝鑾鼻燈塔的3D浮雕模型，搭配其獨特的白色圓柱體和強烈的光束，位於懸崖上俯瞰海洋，在古老的藍圖上。微縮模型，微距攝影。純淨的白色和深藍色調。標誌性的沿海地標，優雅的結構。',
+    animationPrompt:'一鏡到底，鏡頭快速拉近，穿過海面，穿梭動畫，飛快地朝日本前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:5,continent:'asia',city:'Kamakura',country:'Japan',nameEn:'Great Buddha of Kamakura',nameZh:'鎌倉大佛',
+    promptEn:'Kamakura, Japan: 3D relief model of the Great Buddha of Kamakura, a grand bronze statue seated among trees and ancient temple buildings, on a vintage blueprint with Tokyo\'s skyscrapers appearing in the distance. miniatures, macro photography. Earthy, bronze and green tones. Majestic and serene atmosphere. --ar 16:9 --style raw',
+    promptZh:'日本鎌倉：鎌倉大佛的3D浮雕模型，宏偉的青銅雕像坐落在樹林和古老的寺廟建築中，在古老的藍圖上，遠方出現東京的摩天大樓。微縮模型，微距攝影。樸實的青銅和綠色調。雄偉而寧靜的氛圍。',
+    animationPrompt:'一鏡到底，鏡頭快速拉近，鏡頭快速旋轉90度穿過建築，穿梭動畫，飛越城市景觀，飛快向前推進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:6,continent:'asia',city:'Tokyo',country:'Japan',nameEn:'Tokyo Tower',nameZh:'東京鐵塔',
+    promptEn:'Tokyo, Japan: 3D relief model of the Tokyo Tower, surrounded by futuristic city buildings and cherry blossom trees, on an aged blueprint, miniatures, macro photography. Vibrant red and white colors. Intricate architectural details, miniature scene. --ar 16:9 --style raw',
+    promptZh:'東京，日本：東京鐵塔的3D浮雕模型，周圍是未來感十足的城市建築和櫻花樹，在古老的藍圖上，微縮模型，微距攝影。鮮豔的紅色和白色。複雜的建築細節，微縮景觀。',
+    animationPrompt:'穿梭動畫，鏡頭穿過海面，飛快地朝韓國前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:7,continent:'asia',city:'Seoul',country:'South Korea',nameEn:'Gyeongbokgung Palace',nameZh:'景福宮',
+    promptEn:'Seoul, South Korea: 3D relief model of Gyeongbokgung Palace, with its ornate halls and elegant rooflines, surrounded by traditional hanok village buildings, on an aged blueprint. Rich red and green tones. Ornate Korean architecture, serene atmosphere. miniatures, macro photography. --ar 16:9 --style raw',
+    promptZh:'韓國，首爾：景福宮的3D浮雕模型，搭配其華麗的大廳和優雅的屋頂線條，周圍是傳統的韓屋村建築，在古老的藍圖上。豐富的紅色和綠色調。華麗的韓式建築，寧靜的氛圍。',
+    animationPrompt:'一鏡到底，鏡頭快速拉近，穿過首爾市區的未來感建築，飛越建築物，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:8,continent:'asia',city:'Seoul',country:'South Korea',nameEn:'Dongdaemun Design Plaza',nameZh:'東大門設計廣場',
+    promptEn:'Seoul, South Korea: 3D relief model of Dongdaemun Design Plaza (DDP), with its curved, fluid silver forms, surrounded by modern cityscape and a bustling market, on an aged blueprint. Sleek silver and grey tones. Futuristic and fluid architecture. miniatures, macro photography. --ar 16:9 --style raw',
+    promptZh:'韓國，首爾：東大門設計廣場（DDP）的3D浮雕模型，搭配其彎曲、流暢的銀色外型，周圍是現代城市景觀和繁華的市場，在古老的藍圖上。光滑的銀色和灰色調。未來感和流線型建築。',
+    animationPrompt:'穿梭動畫，鏡頭穿過黃海，飛快地朝中國前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:9,continent:'asia',city:'Shanghai',country:'China',nameEn:'Oriental Pearl Tower',nameZh:'東方明珠塔',
+    promptEn:'Shanghai, China: 3D relief of the Oriental Pearl Tower, surrounded by modern skyscrapers and the Bund waterfront, on an aged blueprint. miniatures, macro photography. Muted, earthy, and warm tones. Detailed cityscape. --ar 16:9 --style raw',
+    promptZh:'上海，中國：東方明珠塔的3D浮雕，周圍是現代摩天大樓和外灘水岸，在古老的藍圖上。微縮模型，微距攝影。柔和、質樸且溫暖的色調。精緻的城市景觀。',
+    animationPrompt:'穿梭動畫，鏡頭飛越廣闊的平原，飛向壯麗的山脈，飛快向前推進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:10,continent:'asia',city:'Beijing',country:'China',nameEn:'Great Wall of China',nameZh:'萬里長城',
+    promptEn:'Beijing, China: 3D relief model of the Great Wall of China winding through mountains and lush forests, on an aged blueprint, miniatures, macro photography. Warm, earthy brown and green tones. Impressive scale and detailed stonework. --ar 16:9 --style raw',
+    promptZh:'中國，北京：萬里長城的3D浮雕模型，蜿蜒穿過山脈和茂密的森林，在古老的藍圖上，微縮模型，微距攝影。溫暖、質樸的棕色和綠色調。令人印象深刻的規模和詳細的石砌結構。',
+    animationPrompt:'一鏡到底，鏡頭快速拉近，穿過北京城市景觀的未來感建築，飛越建築物，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:11,continent:'asia',city:'Beijing',country:'China',nameEn:'Temple of Heaven',nameZh:'天壇',
+    promptEn:'Beijing, China: 3D relief model of the Temple of Heaven, with its iconic triple-gabled circular building and ornate details, surrounded by the ceremonial grounds, on an aged blueprint. Rich blue and terracotta tones. Imperial and spiritual architecture. miniatures, macro photography. --ar 16:9 --style raw',
+    promptZh:'中國，北京：天壇的3D浮雕模型，帶有其標誌性的三重簷圓形建築和華麗的細節，周圍是祭祀廣場，在古老的藍圖上。豐富的藍色和赤陶色調。帝王級和精神性的建築。',
+    animationPrompt:'一鏡到底，鏡頭快速拉近，穿過茂密的叢林，飛快地朝吳哥窟前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:12,continent:'asia',city:'Siem Reap',country:'Cambodia',nameEn:'Angkor Wat',nameZh:'吳哥窟',
+    promptEn:'Cambodia: 3D relief model of Angkor Wat temple complex, with its spires and moats, surrounded by lush jungle and ancient ruins, on a vintage blueprint, miniatures, macro photography. Earthy, mossy stone and green tones. Intricate carvings, mystical atmosphere. --ar 16:9 --style raw',
+    promptZh:'柬埔寨：吳哥窟寺廟群的3D浮雕模型，搭配其尖塔和護城河，周圍是鬱鬱蔥蔥的叢林和古代遺跡，在古老的藍圖上，微縮模型，微距攝影。質樸、長滿青苔的石頭和綠色調。複雜的雕刻，神秘的氛圍。',
+    animationPrompt:'穿梭動畫，鏡頭飛越熱帶平原與山脈，飛快地朝印度前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:13,continent:'asia',city:'Agra',country:'India',nameEn:'Taj Mahal',nameZh:'泰姬陵',
+    promptEn:'Agra, India: 3D relief of the Taj Mahal mausoleum, with its reflecting pool and lush gardens, on a vintage map, miniatures, macro photography. Pristine white and green tones. Symmetrical, ornate architecture. --ar 16:9 --style raw',
+    promptZh:'阿格拉，印度：泰姬陵陵墓的3D浮雕，搭配其倒影池和鬱鬱蔥蔥的花園，在古董地圖上，微縮模型，微距攝影。原始的白色和綠色調。對稱、華麗的建築。',
+    animationPrompt:'穿梭動畫，鏡頭穿過廣闊的沙漠，飛快地朝杜拜前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:14,continent:'asia',city:'Dubai',country:'UAE',nameEn:'Burj Khalifa',nameZh:'哈里發塔',
+    promptEn:'Dubai, UAE: 3D relief model of the Burj Khalifa skyscraper, surrounded by modern cityscape and a desert oasis, on an aged blueprint, miniatures, macro photography. Sleek, metallic tones. Futuristic architecture. --ar 16:9 --style raw',
+    promptZh:'杜拜，阿拉伯聯合大公國：哈里發塔摩天大樓的3D浮雕模型，周圍是現代城市景觀和沙漠綠洲，在古老的藍圖上。微縮模型，微距攝影。光滑、金屬的色調。未來感十足的建築。',
+    animationPrompt:'穿梭動畫，鏡頭穿過波斯灣，飛快地朝伊斯坦堡前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:15,continent:'asia',city:'Istanbul',country:'Turkey',nameEn:'Hagia Sophia',nameZh:'聖索菲亞大教堂',
+    promptEn:'Istanbul, Turkey: 3D relief of the Hagia Sophia mosque, with its grand dome and minarets, on a vintage map, miniatures, macro photography. Warm terracotta and blue tones. Intricate Islamic and Byzantine details. --ar 16:9 --style raw',
+    promptZh:'伊斯坦堡，土耳其：聖索菲亞大教堂清真寺的3D浮雕，搭配其宏偉的圓頂和宣禮塔，在古董地圖上，微縮模型，微距攝影。溫暖的赤褐色和藍色調。複雜的伊斯蘭和拜占庭細節。',
+    animationPrompt:'穿梭動畫，鏡頭飛越東歐平原，朝著冰雪覆蓋的城市前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+
+  // EUROPE
+  {id:16,continent:'europe',city:'Moscow',country:'Russia',nameEn:"St. Basil's Cathedral",nameZh:'聖瓦西里主教座堂',
+    promptEn:"Moscow, Russia: 3D relief model of St. Basil's Cathedral with its vibrant onion domes, surrounded by snow-covered cityscapes, on an old blueprint, miniatures, macro photography. Rich, saturated colors. Intricate religious architecture. --ar 16:9 --style raw",
+    promptZh:'莫斯科，俄羅斯：聖瓦西里主教座堂的3D浮雕模型，搭配其鮮豔的洋蔥頭圓頂，周圍是白雪覆蓋的城市景觀，在古老的藍圖上，微縮模型，微距攝影。豐富、飽和的色彩。複雜的宗教建築。',
+    animationPrompt:'穿梭動畫，鏡頭飛越歐洲大陸，穿過城市與森林，飛快地朝柏林前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:17,continent:'europe',city:'Berlin',country:'Germany',nameEn:'Brandenburg Gate',nameZh:'布蘭登堡門',
+    promptEn:'Berlin, Germany: 3D relief of the Brandenburg Gate, with a street and surrounding buildings, on an aged map, miniatures, macro photography. Classical, stone-like tones. Ornate details, historical atmosphere. --ar 16:9 --style raw',
+    promptZh:'柏林，德國：布蘭登堡門的3D浮雕，搭配街道和周圍建築，在古董地圖上，微縮模型，微距攝影。古典、石質色調。華麗的細節，歷史氛圍。',
+    animationPrompt:'穿梭動畫，鏡頭快速移動，穿過鄉村，朝著古老的城市前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:18,continent:'europe',city:'Prague',country:'Czech Republic',nameEn:'Prague Castle',nameZh:'布拉格城堡',
+    promptEn:'Prague, Czech Republic: 3D relief model of Prague Castle, with its spires and courtyards, perched on a hill, on an old blueprint, miniatures, macro photography. Medieval, earthy tones. Intricate Gothic architecture. --ar 16:9 --style raw',
+    promptZh:'布拉格，捷克：布拉格城堡的3D浮雕模型，帶有尖頂和庭院，坐落在山丘上，在古老的藍圖上，微縮模型，微距攝影。中世紀、質樸的色調。複雜的哥德式建築。',
+    animationPrompt:'穿梭動畫，鏡頭飛越歐洲腹地，穿過田園與小鎮，飛快地朝巴黎前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:19,continent:'europe',city:'Paris',country:'France',nameEn:'Eiffel Tower',nameZh:'艾菲爾鐵塔',
+    promptEn:'Paris, France: Intricate 3D relief model of the Eiffel Tower, with a stylized park and surrounding buildings, on an antique map, miniatures, macro photography. vibrant blues, greens, and blooming flowers with elegant golden-brown tones. Delicate structure, miniature scene. --ar 16:9 --style raw',
+    promptZh:'巴黎，法國：艾菲爾鐵塔的精緻3D浮雕模型，搭配風格化的公園和周圍建築，在古董地圖上，微縮模型，微距攝影。充滿活力的藍色、綠色和盛開的花朵，並帶有優雅的金棕色調。精緻的結構，微縮景觀。',
+    animationPrompt:'穿梭動畫，鏡頭穿過英吉利海峽，飛快地朝倫敦前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:20,continent:'europe',city:'Paris',country:'France',nameEn:'Arc de Triomphe',nameZh:'凱旋門',
+    promptEn:'Paris, France: 3D relief model of the Arc de Triomphe, surrounded by a stylized roundabout and streetscape, on an antique map, miniatures, macro photography. Elegant, golden-brown and sepia tones. Detailed sculptural reliefs and ornate arches. --ar 16:9 --style raw',
+    promptZh:'巴黎，法國：凱旋門的3D浮雕模型，周圍是風格化的圓環和街景，在古董地圖上，微縮模型，微距攝影。優雅、金棕色和棕褐色調。詳細的雕塑浮雕和華麗的拱門。',
+    animationPrompt:'穿梭動畫，鏡頭穿過英吉利海峽，飛快地朝倫敦前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:21,continent:'europe',city:'London',country:'UK',nameEn:'Big Ben',nameZh:'大笨鐘',
+    promptEn:'London, UK: Detailed 3D relief model of the Big Ben clock tower, surrounded by vintage London architecture, placed on an aged blueprint, miniatures, macro photography. Muted tones, intricate details. --ar 16:9 --style raw',
+    promptZh:'倫敦，英國：大笨鐘鐘樓的精緻3D浮雕模型，周圍環繞著復古倫敦建築，放置在古老的藍圖上，微縮模型，微距攝影。柔和的色調，複雜的細節。',
+    animationPrompt:'穿梭動畫，鏡頭飛越歐洲大陸，穿過阿爾卑斯山，飛快地朝義大利前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:22,continent:'europe',city:'Pisa',country:'Italy',nameEn:'Leaning Tower of Pisa',nameZh:'比薩斜塔',
+    promptEn:'Pisa, Italy: 3D relief model of the Leaning Tower of Pisa, with its distinct tilt and surrounding piazza, on an old blueprint, miniatures, macro photography. Creamy white and green tones. Realistic texture, architectural marvel. --ar 16:9 --style raw',
+    promptZh:'比薩，義大利：比薩斜塔的3D浮雕模型，搭配其獨特的傾斜和周圍的廣場，在古老的藍圖上，微縮模型，微距攝影。奶油白色和綠色調。逼真的紋理，建築奇觀。',
+    animationPrompt:'穿梭動畫，鏡頭快速移動，穿過義大利鄉村，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:23,continent:'europe',city:'Rome',country:'Italy',nameEn:'Colosseum',nameZh:'古羅馬競技場',
+    promptEn:'Rome, Italy: 3D relief of the ancient Colosseum, with ruined walls and surrounding Roman ruins, on a vintage map, miniatures, macro photography. Earthy ochre and red tones. Highly detailed stonework, realistic textures. --ar 16:9 --style raw',
+    promptZh:'羅馬，義大利：古羅馬競技場的3D浮雕，帶有破損的牆壁和周圍的羅馬廢墟，在古董地圖上，微縮模型，微距攝影。質樸的赭色和紅色調。高度詳細的石砌結構，逼真的紋理。',
+    animationPrompt:'穿梭動畫，鏡頭快速移動，穿過義大利鄉村，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:24,continent:'europe',city:'Florence',country:'Italy',nameEn:'Florence Cathedral',nameZh:'佛羅倫斯大教堂',
+    promptEn:'Florence, Italy: 3D relief model of the Florence Cathedral (Duomo), with its grand dome and bell tower, surrounded by historic buildings, on an aged blueprint, miniatures, macro photography. Rich terracotta and white tones. Renaissance architecture masterpiece. --ar 16:9 --style raw',
+    promptZh:'佛羅倫斯，義大利：佛羅倫斯大教堂（圓頂）的3D浮雕模型，帶有其宏偉的圓頂和鐘樓，周圍是歷史建築，在古老的藍圖上，微縮模型，微距攝影。豐富的赤陶色和白色調。文藝復興時期的建築傑作。',
+    animationPrompt:'穿梭動畫，鏡頭穿過蔚藍的地中海，飛快地朝希臘前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:25,continent:'europe',city:'Athens',country:'Greece',nameEn:'Parthenon',nameZh:'帕德嫩神廟',
+    promptEn:'Athens, Greece: 3D relief model of the Parthenon temple on the Acropolis hill, surrounded by ancient ruins, on an aged blueprint, miniatures, macro photography. Classical marble tones. Majestic, historical architecture. --ar 16:9 --style raw',
+    promptZh:'雅典，希臘：衛城山上的帕德嫩神廟的3D浮雕模型，周圍是古代廢墟，在古老的藍圖上，微縮模型，微距攝影。古典的大理石色調。雄偉、歷史悠久的建築。',
+    animationPrompt:'穿梭動畫，鏡頭穿過廣闊的地中海，飛快地朝西班牙前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:26,continent:'europe',city:'Barcelona',country:'Spain',nameEn:'Sagrada Familia',nameZh:'聖家堂',
+    promptEn:'Barcelona, Spain: 3D relief of the Sagrada Família Basilica, with its unique spires and organic forms, on a vintage map, miniatures, macro photography. Vibrant, sun-drenched tones with hints of blue and green. Highly detailed, organic architecture. --ar 16:9 --style raw',
+    promptZh:'巴塞隆納，西班牙：聖家堂大教堂的3D浮雕，搭配其獨特的尖頂和有機形狀，在古董地圖上，微縮模型，微距攝影。充滿活力的陽光色調，並帶有藍色和綠色點綴。高度詳細、有機的建築。',
+    animationPrompt:'穿梭動畫，鏡頭穿過地中海，飛躍北非沙漠，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+
+  // AFRICA
+  {id:27,continent:'africa',city:'Cairo',country:'Egypt',nameEn:'Great Pyramid & Sphinx',nameZh:'吉薩大金字塔與人面獅身像',
+    promptEn:'Cairo, Egypt: 3D relief of the Great Pyramid of Giza and the Sphinx, surrounded by a desert landscape, on a vintage map, miniatures, macro photography. Sandy, golden tones. Detailed stone texture, mystical atmosphere. --ar 16:9 --style raw',
+    promptZh:'開羅，埃及：吉薩大金字塔和人面獅身像的3D浮雕，周圍是沙漠景觀，在古董地圖上，微縮模型，微距攝影。沙質、金色調。詳細的石頭紋理，神秘的氛圍。',
+    animationPrompt:'穿梭動畫，鏡頭橫跨浩瀚的大西洋，飛快地朝巴西前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+
+  // SOUTH AMERICA
+  {id:28,continent:'south-america',city:'Rio de Janeiro',country:'Brazil',nameEn:'Christ the Redeemer',nameZh:'基督救世主雕像',
+    promptEn:'Rio de Janeiro, Brazil: 3D relief model of the Christ the Redeemer statue on a mountaintop, overlooking the city and the vast blue ocean, on a vintage blueprint, miniatures, macro photography. Lush green and warm stone tones. Detailed statue and landscape. --ar 16:9 --style raw',
+    promptZh:'里約熱內盧，巴西：基督救世主雕像的3D浮雕模型，位於山頂，俯瞰城市與一望無際的蔚藍海洋，在古老的藍圖上，微縮模型，微距攝影。鬱鬱蔥蔥的綠色和溫暖的石色。詳細的雕像和景觀。',
+    animationPrompt:'穿梭動畫，鏡頭飛越南美與北美洲大陸，穿過叢林與城市，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+
+  // NORTH AMERICA
+  {id:29,continent:'north-america',city:'New York City',country:'USA',nameEn:'Statue of Liberty',nameZh:'自由女神像',
+    promptEn:'New York City, USA: 3D relief model of the Statue of Liberty on a small island, with waves and the distant city skyline, on an old blueprint, miniatures, macro photography. Cool verdigris tones. Realistic miniature scale. --ar 16:9 --style raw',
+    promptZh:'紐約市，美國：自由女神像的3D浮雕模型，位於一個小島上，帶有海浪和遠處的城市天際線，在古老的藍圖上，微縮模型，微距攝影。清涼的銅綠色調。逼真的微縮比例。',
+    animationPrompt:'穿梭動畫，鏡頭飛越美國廣闊的土地，穿過草原與山脈，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:30,continent:'north-america',city:'San Francisco',country:'USA',nameEn:'Golden Gate Bridge',nameZh:'金門大橋',
+    promptEn:'San Francisco, USA: 3D relief model of the Golden Gate Bridge, suspended over water with fog rolling in, on an old blueprint, miniatures, macro photography. Striking red-orange color. Intricate suspension cables and support towers. --ar 16:9 --style raw',
+    promptZh:'舊金山，美國：金門大橋的3D浮雕模型，懸掛在水面上，薄霧籠罩，在古老的藍圖上，微縮模型，微距攝影。引人注目的紅橙色。複雜的懸索和支撐塔。',
+    animationPrompt:'穿梭動畫，鏡頭從西海岸飛向東岸，穿過城市與河流，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:31,continent:'north-america',city:'Washington D.C.',country:'USA',nameEn:'White House',nameZh:'白宮',
+    promptEn:'Washington D.C., USA: 3D relief of the White House, with its surrounding lawn and classical architecture, on a vintage map, miniatures, macro photography. Clean, white and green tones. Symmetrical, political landmark. --ar 16:9 --style raw',
+    promptZh:'華盛頓特區，美國：白宮的3D浮雕，搭配其周圍的草坪和古典建築，在古董地圖上，微縮模型，微距攝影。乾淨、白色和綠色的色調。對稱、政治地標。',
+    animationPrompt:'動畫過場：穿梭動畫，鏡頭從美國東岸飛越廣闊的太平洋，飛快地朝夏威夷前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+
+  // OCEANIA
+  {id:32,continent:'oceania',city:'Honolulu',country:'Hawaii, USA',nameEn:'Diamond Head',nameZh:'鑽石山火山口',
+    promptEn:'Honolulu, Hawaii: 3D relief model of Diamond Head volcano overlooking Waikiki Beach with palm trees and a vast blue ocean, on an aged blueprint, miniatures, macro photography. Lush green and warm stone tones. Iconic landmark and landscape. --ar 16:9 --style raw',
+    promptZh:'美國，夏威夷檀香山：鑽石山火山口的3D浮雕模型，俯瞰威基基海灘，搭配棕櫚樹和一望無際的蔚藍海洋，在古老的藍圖上，微縮模型，微距攝影。鬱鬱蔥蔥的綠色和溫暖的石色。標誌性的地標和景觀。',
+    animationPrompt:'穿梭動畫，鏡頭從夏威夷群島上空，橫越太平洋，飛快地朝澳洲前進，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。'},
+  {id:33,continent:'oceania',city:'Sydney',country:'Australia',nameEn:'Sydney Opera House',nameZh:'雪梨歌劇院',
+    promptEn:'Sydney, Australia: 3D relief of the Sydney Opera House and the Harbour Bridge, with water and sailboats, on an old map, miniatures, macro photography. Clean, white and blue color scheme. Smooth, geometric architecture. --ar 16:9 --style raw',
+    promptZh:'雪梨，澳洲：雪梨歌劇院和海港大橋的3D浮雕，搭配水域和帆船，在古老的地圖上，微縮模型，微距攝影。乾淨、白色和藍色的配色。流暢、幾何的建築。',
+    animationPrompt:''}
+];
+
+const CONTINENTS = [
+  {key:'all',label:'All',labelZh:'全部'},
+  {key:'asia',label:'Asia',labelZh:'亞洲'},
+  {key:'europe',label:'Europe',labelZh:'歐洲'},
+  {key:'africa',label:'Africa',labelZh:'非洲'},
+  {key:'south-america',label:'S. America',labelZh:'南美洲'},
+  {key:'north-america',label:'N. America',labelZh:'北美洲'},
+  {key:'oceania',label:'Oceania',labelZh:'大洋洲'}
+];
+
+let activeContinent = 'all';
+let apiKey = '';
+
+function init() {
+  loadApiKey();
+  renderContinentBar();
+  renderCards();
+  renderVideoSelects();
+  document.getElementById('searchInput').addEventListener('input', renderCards);
+  document.getElementById('genInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') generatePrompt();
+  });
+}
+
+function loadApiKey() {
+  const saved = localStorage.getItem('gemini_api_key_gj');
+  if (saved) {
+    apiKey = saved;
+    document.getElementById('keyToggle').classList.add('active');
+  }
+}
+
+function toggleKeyPanel() {
+  const panel = document.getElementById('keyPanel');
+  panel.classList.toggle('show');
+  if (panel.classList.contains('show') && apiKey) {
+    document.getElementById('keyInput').value = apiKey;
+    document.getElementById('keyStatus').textContent = 'Key saved';
+    document.getElementById('keyStatus').className = 'key-status ok';
+  }
+}
+
+function saveApiKey() {
+  const input = document.getElementById('keyInput');
+  const key = input.value.trim();
+  const status = document.getElementById('keyStatus');
+  if (!key.startsWith('AIza') || key.length < 35) {
+    status.textContent = 'Invalid key format (should start with AIza and be 35+ chars)';
+    status.className = 'key-status err';
+    return;
+  }
+  apiKey = key;
+  const remember = document.getElementById('keyRemember').checked;
+  if (remember) {
+    localStorage.setItem('gemini_api_key_gj', key);
+  } else {
+    sessionStorage.setItem('gemini_api_key_gj', key);
+    localStorage.removeItem('gemini_api_key_gj');
+  }
+  status.textContent = 'Key saved successfully';
+  status.className = 'key-status ok';
+  document.getElementById('keyToggle').classList.add('active');
+}
+
+function renderContinentBar() {
+  const bar = document.getElementById('continentBar');
+  const counts = {};
+  LANDMARKS.forEach(l => { counts[l.continent] = (counts[l.continent] || 0) + 1; });
+  counts.all = LANDMARKS.length;
+
+  bar.innerHTML = CONTINENTS.map(c => {
+    const isActive = c.key === activeContinent ? ' active' : '';
+    return `<button class="continent-pill${isActive}" onclick="filterContinent('${c.key}')">
+      ${c.labelZh} ${c.label} <span class="count">${counts[c.key] || 0}</span>
+    </button>`;
+  }).join('');
+}
+
+function filterContinent(key) {
+  activeContinent = key;
+  renderContinentBar();
+  renderCards();
+}
+
+function renderCards() {
+  const grid = document.getElementById('cardsGrid');
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  let filtered = LANDMARKS;
+
+  if (activeContinent !== 'all') {
+    filtered = filtered.filter(l => l.continent === activeContinent);
+  }
+  if (search) {
+    filtered = filtered.filter(l =>
+      l.nameEn.toLowerCase().includes(search) ||
+      l.nameZh.includes(search) ||
+      l.city.toLowerCase().includes(search) ||
+      l.country.toLowerCase().includes(search)
+    );
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="no-results">No landmarks found</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(l => `
+    <div class="card" id="card-${l.id}" onclick="toggleCard(${l.id})">
+      <div class="card-header">
+        <span class="card-num">#${String(l.id).padStart(2,'0')}</span>
+        <div class="card-info">
+          <div class="card-name-en">${l.nameEn}</div>
+          <div class="card-name-zh">${l.nameZh}</div>
+          <div class="card-location">${l.city}${l.country ? ', ' + l.country : ''}</div>
+        </div>
+        <svg class="card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <div class="card-detail-content">
+            <div class="prompt-section">
+              <div class="prompt-label">
+                Image Prompt (EN)
+                <button class="copy-btn" onclick="event.stopPropagation();copyText(this, ${JSON.stringify(l.promptEn).replace(/"/g,'&quot;')})">Copy</button>
+              </div>
+              <div class="prompt-text">${escapeHtml(l.promptEn)}</div>
+            </div>
+            <div class="prompt-section">
+              <div class="prompt-label">
+                Chinese Translation
+                <button class="copy-btn" onclick="event.stopPropagation();copyText(this, ${JSON.stringify(l.promptZh).replace(/"/g,'&quot;')})">Copy</button>
+              </div>
+              <div class="prompt-text-zh">${escapeHtml(l.promptZh)}</div>
+            </div>
+            ${l.animationPrompt ? `<div class="prompt-section">
+              <div class="prompt-label">
+                Animation Transition
+                <button class="copy-btn" onclick="event.stopPropagation();copyText(this, ${JSON.stringify(l.animationPrompt).replace(/"/g,'&quot;')})">Copy</button>
+              </div>
+              <div class="prompt-text-anim">${escapeHtml(l.animationPrompt)}</div>
+            </div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  card.classList.toggle('open');
+}
+
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.textContent = 'Copied!';
+    showToast('Copied to clipboard');
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = 'Copy';
+    }, 2000);
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+async function generatePrompt() {
+  if (!apiKey) {
+    showToast('Please set your Gemini API Key first');
+    document.getElementById('keyPanel').classList.add('show');
+    return;
+  }
+  const input = document.getElementById('genInput').value.trim();
+  if (!input) return;
+
+  const btn = document.getElementById('genBtn');
+  const result = document.getElementById('genResult');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+  result.innerHTML = '<div class="gen-loading"><div class="spinner"></div><br>Generating prompt for "' + escapeHtml(input) + '"...</div>';
+
+  const systemPrompt = `You are a creative prompt generator for MidJourney AI image generation. Your specialty is creating prompts for "3D relief miniature models of world landmarks on aged blueprints" in macro photography style.
+
+Given a landmark or location name, generate:
+1. An English image prompt in this exact style: "[City, Country]: 3D relief model of [landmark], with [distinctive features], [surrounding context], on an aged blueprint, miniatures, macro photography. [Color tones]. [Architectural style]. --ar 16:9 --style raw"
+2. A Chinese translation of the prompt
+3. A Chinese animation transition prompt for video (Kling/JiMeng) in this style: "穿梭動畫，鏡頭[movement description]，來到一片空白地面上，建築物如雨後春筍一般從空白地面拔地而起。"
+
+Return ONLY a JSON object with these keys: promptEn, promptZh, animationPrompt. No markdown code blocks.`;
+
+  try {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        contents: [{parts: [{text: `Generate a 3D relief miniature model prompt for: ${input}`}]}],
+        systemInstruction: {parts: [{text: systemPrompt}]},
+        generationConfig: {temperature: 0.8, maxOutputTokens: 1024}
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || 'API request failed');
+    }
+
+    const data = await resp.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const cleaned = text.replace(/```json\n?|\n?```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    result.innerHTML = `
+      <div class="gen-result-card">
+        <div style="font-weight:600;font-size:16px;margin-bottom:12px;color:var(--gold)">${escapeHtml(input)}</div>
+        <div class="prompt-section">
+          <div class="prompt-label">Image Prompt (EN) <button class="copy-btn" onclick="copyText(this, ${JSON.stringify(String(parsed.promptEn || '')).replace(/"/g,'&quot;')})">Copy</button></div>
+          <div class="prompt-text">${escapeHtml(String(parsed.promptEn || ''))}</div>
+        </div>
+        <div class="prompt-section">
+          <div class="prompt-label">Chinese Translation <button class="copy-btn" onclick="copyText(this, ${JSON.stringify(String(parsed.promptZh || '')).replace(/"/g,'&quot;')})">Copy</button></div>
+          <div class="prompt-text-zh">${escapeHtml(String(parsed.promptZh || ''))}</div>
+        </div>
+        ${parsed.animationPrompt ? `<div class="prompt-section">
+          <div class="prompt-label">Animation Transition <button class="copy-btn" onclick="copyText(this, ${JSON.stringify(String(parsed.animationPrompt || '')).replace(/"/g,'&quot;')})">Copy</button></div>
+          <div class="prompt-text-anim">${escapeHtml(String(parsed.animationPrompt || ''))}</div>
+        </div>` : ''}
+      </div>`;
+  } catch (e) {
+    result.innerHTML = `<div class="gen-error">${escapeHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate';
+  }
+}
+
+function renderVideoSelects() {
+  const fromSel = document.getElementById('videoFrom');
+  const toSel = document.getElementById('videoTo');
+  const opts = LANDMARKS.map(l => `<option value="${l.id}">${l.nameZh} (${l.nameEn})</option>`).join('');
+  fromSel.innerHTML = opts;
+  toSel.innerHTML = opts;
+  if (LANDMARKS.length > 1) toSel.selectedIndex = 1;
+}
+
+function generateTransition() {
+  const fromId = parseInt(document.getElementById('videoFrom').value);
+  const toId = parseInt(document.getElementById('videoTo').value);
+  const from = LANDMARKS.find(l => l.id === fromId);
+  const to = LANDMARKS.find(l => l.id === toId);
+  if (!from || !to) return;
+
+  const directions = {
+    'asia-europe': '飛越亞洲大陸，穿過中亞草原與歐洲平原',
+    'asia-africa': '飛越印度洋，穿過阿拉伯半島與紅海',
+    'asia-south-america': '橫跨太平洋，飛越廣闊的海洋',
+    'asia-north-america': '橫越太平洋，穿過雲海與島嶼',
+    'asia-oceania': '飛越南海與印度尼西亞群島',
+    'europe-africa': '穿過地中海，飛躍北非沙漠',
+    'europe-south-america': '橫跨浩瀚的大西洋',
+    'europe-north-america': '飛越北大西洋，穿過冰島與格陵蘭',
+    'europe-oceania': '飛越亞洲大陸與印度洋',
+    'africa-south-america': '橫跨大西洋',
+    'africa-north-america': '飛越大西洋與加勒比海',
+    'africa-oceania': '飛越印度洋與東南亞群島',
+    'south-america-north-america': '飛越中美洲，穿過叢林與城市',
+    'south-america-oceania': '橫越太平洋',
+    'north-america-oceania': '飛越廣闊的太平洋'
+  };
+
+  let dirKey = from.continent + '-' + to.continent;
+  let direction = directions[dirKey];
+  if (!direction) {
+    dirKey = to.continent + '-' + from.continent;
+    direction = directions[dirKey];
+  }
+  if (!direction) {
+    if (from.continent === to.continent) {
+      direction = `穿過城市與鄉村，飛快地從${from.nameZh}朝${to.nameZh}前進`;
+    } else {
+      direction = `飛越大陸與海洋`;
+    }
+  }
+
+  const prompt = `穿梭動畫，一鏡到底，鏡頭從${from.nameZh}上空快速拉遠，${direction}，飛快地朝${to.nameZh}前進，來到一片空白地面上，${to.nameZh}的建築物如雨後春筍一般從空白地面拔地而起。`;
+
+  const resultDiv = document.getElementById('videoResult');
+  resultDiv.innerHTML = `
+    <div style="margin-top:16px;padding:16px;background:var(--linen);border:1px solid var(--gold);border-radius:var(--radius)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font:600 12px var(--font-body);letter-spacing:0.5px;text-transform:uppercase;color:var(--sienna)">Transition Prompt</span>
+        <button class="copy-btn" onclick="copyText(this, ${JSON.stringify(prompt).replace(/"/g,'&quot;')})">Copy</button>
+      </div>
+      <div class="prompt-text-anim">${escapeHtml(prompt)}</div>
+    </div>`;
+}
+
+init();
+</script>
+</body>
+</html>

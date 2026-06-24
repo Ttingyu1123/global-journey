@@ -1,0 +1,29 @@
+:root {
+  --linen: #EDE0CC;
+  --linen-dark: #E2D4BE;
+  --cream: #F5EDE0;
+  --forest: #4D7E7A;
+  --forest-deep: #3E6B67;
+  --forest-mist: rgba(77, 126, 122, 0.08);
+  --sienna: #A67C52;
+  --sienna-hover: #8F6B47;
+  --sienna-pressed: #7A5B3C;
+  --sienna-light: rgba(166, 124, 82, 0.12);
+  --gold: #C4A872;
+  --gold-dim: rgba(196, 168, 114, 0.35);
+  --ink: #4A4038;
+  --ink-muted: #6B6058;
+  --ink-light: #8A7F77;
+  --inverse: #FAF4E8;
+  --inverse-muted: #E0D5C4;
+  --shadow-1: 0 1px 3px rgba(74, 64, 56, 0.06);
+  --shadow-2: 0 2px 8px rgba(74, 64, 56, 0.08);
+  --shadow-3: 0 4px 16px rgba(74, 64, 56, 0.12);
+  --shadow-4: 0 8px 32px rgba(74, 64, 56, 0.15);
+  --radius: 4px;
+  --font-display: 'Great Vibes', cursive;
+  --font-heading: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Poppins', 'Noto Sans TC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-cjk: 'Noto Sans TC', sans-serif;
+}
