@@ -102,6 +102,10 @@
 .copy-btn:hover { border-color: var(--sienna); color: var(--sienna); }
 .copy-btn.copied { background: var(--sienna); color: #fff; border-color: var(--sienna); }
 
+/* When a non-default style is active, dim the original prompt section */
+.prompt-section-original { opacity: 0.55; }
+.prompt-section-original .prompt-label { font-size: 11px; }
+
 .no-results {
   text-align: center; padding: 48px 24px; color: var(--ink-light);
   font-size: 15px; grid-column: 1 / -1;

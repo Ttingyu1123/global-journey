@@ -6,7 +6,7 @@ import { initKeyPanel } from './components/KeyPanel'
 import { initAiGenerator } from './components/AiGenerator'
 import { initVideoTransition } from './components/VideoTransition'
 import { initMap } from './components/MapView'
-import { initStylePicker } from './components/StylePicker'
+import { initStylePicker, onStyleChange } from './components/StylePicker'
 import { initRoutePlanner } from './components/RoutePlanner'
 import { $ } from './utils/html'
 
@@ -15,6 +15,7 @@ async function init(): Promise<void> {
   initKeyPanel()
   initMap()
   initStylePicker()
+  onStyleChange(() => renderCards())
   await initBookmarks()
   renderContinentBar()
   onContinentChange(() => renderCards())

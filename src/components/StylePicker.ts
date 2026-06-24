@@ -6,9 +6,18 @@ import { composePrompt } from '../utils/style-composer'
 import { showToast } from './Toast'
 
 let activeStyle: StyleTemplate = STYLE_TEMPLATES[0]
+let onChangeCallback: (() => void) | null = null
 
 export function getActiveStyle(): StyleTemplate {
   return activeStyle
+}
+
+export function isDefaultStyle(): boolean {
+  return activeStyle.key === '3d-relief'
+}
+
+export function onStyleChange(cb: () => void): void {
+  onChangeCallback = cb
 }
 
 export function initStylePicker(): void {
@@ -28,6 +37,7 @@ export function initStylePicker(): void {
       container.querySelectorAll('.style-pill').forEach(b => b.classList.remove('active'))
       btn.classList.add('active')
       updatePreview()
+      onChangeCallback?.()
     }
   })
 

@@ -1,6 +1,8 @@
 import { LANDMARKS } from '../data/landmarks'
 import { escapeHtml, $, copyToClipboard } from '../utils/html'
 import { getActiveContinent } from './ContinentBar'
+import { getActiveStyle, isDefaultStyle } from './StylePicker'
+import { composePrompt } from '../utils/style-composer'
 import { showToast } from './Toast'
 import { toggleBookmark, getBookmarks } from '../services/db'
 import type { Landmark } from '../types'
@@ -20,6 +22,8 @@ export async function renderCards(): Promise<void> {
   const grid = $('cardsGrid')
   const continent = getActiveContinent()
   const search = searchQuery.toLowerCase().trim()
+  const style = getActiveStyle()
+  const useComposed = !isDefaultStyle()
 
   let filtered: Landmark[] = LANDMARKS
   if (continent !== 'all') {
@@ -44,6 +48,10 @@ export async function renderCards(): Promise<void> {
     const bookmarkIcon = bookmarkedIds.has(l.id)
       ? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M5 2h14a1 1 0 011 1v19.143a.5.5 0 01-.766.424L12 18.03l-7.234 4.537A.5.5 0 014 22.143V3a1 1 0 011-1z"/></svg>'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 2h14a1 1 0 011 1v19.143a.5.5 0 01-.766.424L12 18.03l-7.234 4.537A.5.5 0 014 22.143V3a1 1 0 011-1z"/></svg>'
+
+    const composedPrompt = useComposed ? composePrompt(l, style) : ''
+    const styleLabel = useComposed ? ` (${style.label})` : ''
+
     return `
     <div class="card" data-id="${l.id}">
       <div class="card-header">
@@ -61,9 +69,17 @@ export async function renderCards(): Promise<void> {
       <div class="card-detail">
         <div class="card-detail-inner">
           <div class="card-detail-content">
+            ${useComposed ? `
             <div class="prompt-section">
               <div class="prompt-label">
-                Image Prompt (EN)
+                ${escapeHtml(style.label)} Prompt${escapeHtml(styleLabel)}
+                <button class="copy-btn" data-copy-composed="${l.id}">Copy</button>
+              </div>
+              <div class="prompt-text">${escapeHtml(composedPrompt)}</div>
+            </div>` : ''}
+            <div class="prompt-section${useComposed ? ' prompt-section-original' : ''}">
+              <div class="prompt-label">
+                ${useComposed ? 'Original ' : ''}Image Prompt (EN)
                 <button class="copy-btn" data-copy="promptEn" data-id="${l.id}">Copy</button>
               </div>
               <div class="prompt-text">${escapeHtml(l.promptEn)}</div>
@@ -93,6 +109,23 @@ export async function renderCards(): Promise<void> {
 
 function handleGridClick(e: Event): void {
   const target = e.target as HTMLElement
+
+  const composedCopy = target.closest('[data-copy-composed]') as HTMLElement | null
+  if (composedCopy) {
+    e.stopPropagation()
+    const id = Number(composedCopy.dataset.copyComposed)
+    const landmark = LANDMARKS.find(l => l.id === id)
+    if (landmark) {
+      const text = composePrompt(landmark, getActiveStyle())
+      copyToClipboard(text).then(() => {
+        composedCopy.classList.add('copied')
+        composedCopy.textContent = 'Copied!'
+        showToast('Copied to clipboard')
+        setTimeout(() => { composedCopy.classList.remove('copied'); composedCopy.textContent = 'Copy' }, 2000)
+      })
+    }
+    return
+  }
 
   const copyBtn = target.closest('.copy-btn') as HTMLElement | null
   if (copyBtn) {
