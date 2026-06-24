@@ -3,13 +3,13 @@ import { CONTINENTS } from '../data/continents'
 import { escapeHtml, $ } from '../utils/html'
 
 let activeContinent = 'all'
-let onChangeCallback: (() => void) | null = null
+let onChangeCallback: ((continent: string) => void) | null = null
 
 export function getActiveContinent(): string {
   return activeContinent
 }
 
-export function onContinentChange(cb: () => void): void {
+export function onContinentChange(cb: (continent: string) => void): void {
   onChangeCallback = cb
 }
 
@@ -30,7 +30,7 @@ export function renderContinentBar(): void {
     btn.addEventListener('click', () => {
       activeContinent = (btn as HTMLElement).dataset.continent!
       renderContinentBar()
-      onChangeCallback?.()
+      onChangeCallback?.(activeContinent)
     })
   })
 }

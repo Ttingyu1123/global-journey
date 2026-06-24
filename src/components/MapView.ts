@@ -5,15 +5,18 @@ import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { LANDMARKS } from '../data/landmarks'
 import { escapeHtml, $ } from '../utils/html'
-import type { ContinentKey } from '../types'
+import type { ContinentKey, Landmark } from '../types'
 
-// leaflet.markercluster augments L namespace at runtime but lacks bundled types
 declare module 'leaflet' {
-  function markerClusterGroup(options?: Record<string, unknown>): L.LayerGroup & { addLayer(layer: L.Layer): void }
+  function markerClusterGroup(options?: Record<string, unknown>): L.LayerGroup & {
+    addLayer(layer: L.Layer): void
+    clearLayers(): void
+  }
 }
 
 let map: L.Map | null = null
 let clusterGroup: ReturnType<typeof L.markerClusterGroup> | null = null
+let allMarkers: { marker: L.Marker; landmark: Landmark }[] = []
 
 const CONTINENT_COLORS: Record<ContinentKey, string> = {
   'asia': '#C4A872',
@@ -49,6 +52,15 @@ export function initMap(): void {
   })
 }
 
+export function filterMapByContinent(continent: string): void {
+  if (!map || !clusterGroup) return
+  clusterGroup.clearLayers()
+  const filtered = continent === 'all'
+    ? allMarkers
+    : allMarkers.filter(m => m.landmark.continent === continent)
+  filtered.forEach(m => clusterGroup!.addLayer(m.marker))
+}
+
 function buildMap(): void {
   const container = $('mapContainer')
   map = L.map(container, {
@@ -79,17 +91,18 @@ function buildMap(): void {
     },
   })
 
-  LANDMARKS.forEach(l => {
+  allMarkers = LANDMARKS.map(l => {
     const marker = L.marker([l.lat, l.lng], { icon: createIcon(l.continent) })
     marker.bindPopup(`
       <div class="gj-popup">
         <strong>${escapeHtml(l.nameEn)}</strong>
         <div class="gj-popup-zh">${escapeHtml(l.nameZh)}</div>
-        <div class="gj-popup-loc">${escapeHtml(l.city)}, ${escapeHtml(l.country)}</div>
+        <div class="gj-popup-loc">${escapeHtml(l.city)}${l.country ? ', ' + escapeHtml(l.country) : ''}</div>
         <button class="gj-popup-btn" data-goto="${l.id}">View Prompt</button>
       </div>
     `, { maxWidth: 250 })
     clusterGroup!.addLayer(marker)
+    return { marker, landmark: l }
   })
 
   map.addLayer(clusterGroup)

@@ -5,7 +5,7 @@ import { renderCards, setSearchQuery, initBookmarks } from './components/CardGri
 import { initKeyPanel } from './components/KeyPanel'
 import { initAiGenerator } from './components/AiGenerator'
 import { initVideoTransition } from './components/VideoTransition'
-import { initMap } from './components/MapView'
+import { initMap, filterMapByContinent } from './components/MapView'
 import { initStylePicker, onStyleChange } from './components/StylePicker'
 import { initRoutePlanner } from './components/RoutePlanner'
 import { $ } from './utils/html'
@@ -18,7 +18,10 @@ async function init(): Promise<void> {
   onStyleChange(() => renderCards())
   await initBookmarks()
   renderContinentBar()
-  onContinentChange(() => renderCards())
+  onContinentChange((continent) => {
+    renderCards()
+    filterMapByContinent(continent)
+  })
   await renderCards()
   initAiGenerator()
   initVideoTransition()
