@@ -3,6 +3,9 @@
 @import './nav.css';
 @import './hero.css';
 @import './cards.css';
+@import './map.css';
+@import './style-picker.css';
 @import './generator.css';
 @import './video.css';
+@import './route-planner.css';
 @import './toast.css';

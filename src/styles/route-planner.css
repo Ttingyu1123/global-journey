@@ -1,0 +1,89 @@
+/* ─── Route Planner ─── */
+.route-section {
+  max-width: 900px; margin: 0 auto; padding: 0 24px 48px;
+}
+.route-box {
+  background: var(--cream); border: 1px solid var(--gold);
+  border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-2);
+}
+.route-box h2 {
+  font: 700 22px var(--font-heading); color: var(--forest); margin-bottom: 4px;
+}
+.route-box > p {
+  font-size: 14px; color: var(--ink-muted); margin-bottom: 16px;
+}
+
+.route-controls {
+  display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.route-add-select {
+  flex: 1; min-width: 200px; padding: 10px 14px;
+  border: 1px solid var(--gold); border-radius: var(--radius);
+  font: 400 14px var(--font-body); color: var(--ink); background: var(--linen);
+  cursor: pointer;
+}
+.route-add-select:focus { outline: none; border-color: var(--sienna); }
+
+.route-action-btn {
+  padding: 10px 18px; border-radius: var(--radius); cursor: pointer;
+  font: 600 13px var(--font-body); transition: all 0.2s; border: 1px solid;
+}
+.route-export-btn {
+  background: var(--sienna); color: #fff; border-color: var(--sienna);
+}
+.route-export-btn:hover { background: var(--sienna-hover); }
+.route-clear-btn {
+  background: transparent; color: var(--ink-muted); border-color: var(--gold);
+}
+.route-clear-btn:hover { color: var(--ink); border-color: var(--sienna); }
+
+/* Route List */
+.route-list { display: flex; flex-direction: column; gap: 0; }
+
+.route-empty {
+  text-align: center; padding: 32px; color: var(--ink-light); font-size: 14px;
+}
+
+.route-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: var(--linen);
+  border: 1px solid var(--gold-dim); border-radius: var(--radius);
+  cursor: grab; transition: all 0.2s; user-select: none;
+}
+.route-item:hover { box-shadow: var(--shadow-2); }
+.route-item.dragging { opacity: 0.5; box-shadow: var(--shadow-3); }
+
+.route-grip {
+  color: var(--ink-light); font-size: 14px; letter-spacing: -2px; cursor: grab;
+}
+.route-num {
+  font: 700 13px var(--font-mono); color: var(--sienna);
+  background: var(--sienna-light); padding: 2px 8px;
+  border-radius: var(--radius); flex-shrink: 0;
+}
+.route-info { flex: 1; }
+.route-name { font: 600 14px var(--font-heading); color: var(--forest); }
+.route-loc { font: 400 12px var(--font-body); color: var(--ink-light); }
+
+.route-remove {
+  background: none; border: none; cursor: pointer;
+  font-size: 20px; color: var(--ink-light); transition: color 0.2s;
+  padding: 0 4px;
+}
+.route-remove:hover { color: #c0392b; }
+
+/* Transition between items */
+.route-transition {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 16px 6px 40px; color: var(--ink-light); font-size: 12px;
+}
+.route-transition-arrow { color: var(--sienna); font-size: 16px; }
+.route-transition-text {
+  font: 400 12px var(--font-cjk); color: var(--ink-muted);
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  .route-box { padding: 16px; }
+  .route-controls { flex-direction: column; }
+}

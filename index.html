@@ -18,6 +18,10 @@
     <span>Global Journey</span>
   </div>
   <div class="nav-actions">
+    <button class="nav-map-btn" id="mapToggle">
+      <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5a.5.5 0 00.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5a.5.5 0 00-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+      Map
+    </button>
     <button class="nav-key-btn" id="keyToggle">API Key</button>
   </div>
 </nav>
@@ -53,6 +57,21 @@
   </label>
   <div class="key-status" id="keyStatus"></div>
 </div>
+
+<!-- MAP -->
+<section class="map-section" id="mapSection">
+  <div class="map-container" id="mapContainer"></div>
+</section>
+
+<!-- STYLE PICKER -->
+<section class="style-section">
+  <h2>Style Templates</h2>
+  <p>Choose a visual style to preview how landmark prompts look in different aesthetics</p>
+  <div class="style-picker" id="stylePicker"></div>
+  <div class="style-preview" id="stylePreview"></div>
+</section>
+
+<div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
 
 <!-- CONTINENT TABS -->
 <div class="continent-bar" id="continentBar"></div>
@@ -103,6 +122,22 @@
     </div>
     <button class="video-gen-btn" id="videoGenBtn">Generate Transition Prompt</button>
     <div class="video-result" id="videoResult"></div>
+  </div>
+</section>
+
+<div class="divider"><span class="divider-line"></span><span class="divider-dot"></span><span class="divider-line"></span></div>
+
+<!-- ROUTE PLANNER -->
+<section class="route-section">
+  <div class="route-box">
+    <h2>Route Planner</h2>
+    <p>Build a journey route and export all prompts + transition animations as a .txt file</p>
+    <div class="route-controls">
+      <select class="route-add-select" id="routeAddSelect"></select>
+      <button class="route-action-btn route-export-btn" id="routeExportBtn">Export .txt</button>
+      <button class="route-action-btn route-clear-btn" id="routeClearBtn">Clear</button>
+    </div>
+    <div class="route-list" id="routeList"></div>
   </div>
 </section>
 

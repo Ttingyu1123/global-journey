@@ -1,0 +1,65 @@
+/* ─── Map Section ─── */
+.map-section {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px 32px;
+  display: none;
+}
+.map-section.show { display: block; }
+
+.map-container {
+  width: 100%; height: 500px;
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-3);
+}
+
+/* Vintage filter on tiles */
+.map-container .leaflet-tile-pane { filter: sepia(0.4) saturate(0.7) brightness(1.05); }
+
+/* Custom cluster icon */
+.gj-cluster-icon { background: none !important; }
+.gj-cluster {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--sienna); color: #fff;
+  font: 700 13px var(--font-mono);
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Custom marker */
+.gj-marker { background: none !important; border: none !important; }
+
+/* Popup */
+.gj-popup { font-family: var(--font-body); }
+.gj-popup strong { font-size: 14px; color: var(--forest); }
+.gj-popup-zh { font: 400 13px var(--font-cjk); color: var(--ink-muted); margin-top: 2px; }
+.gj-popup-loc { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+.gj-popup-btn {
+  display: block; margin-top: 8px; padding: 4px 12px;
+  background: var(--sienna); color: #fff; border: none;
+  border-radius: var(--radius); cursor: pointer;
+  font: 500 12px var(--font-body); transition: background 0.2s;
+}
+.gj-popup-btn:hover { background: var(--sienna-hover); }
+
+/* Leaflet overrides for vintage feel */
+.leaflet-control-zoom a {
+  background: var(--cream) !important; color: var(--ink) !important;
+  border-color: var(--gold) !important;
+}
+.leaflet-control-attribution { font-size: 10px; opacity: 0.6; }
+
+/* Nav map toggle */
+.nav-map-btn {
+  background: transparent; border: 1px solid var(--inverse-muted); color: var(--inverse);
+  padding: 6px 14px; border-radius: var(--radius); cursor: pointer;
+  font: 500 13px var(--font-body); transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-map-btn:hover { background: rgba(245, 236, 223, 0.12); border-color: var(--inverse); }
+.nav-map-btn.active { background: var(--sienna); border-color: var(--sienna); color: #fff; }
+.nav-map-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+@media (max-width: 768px) {
+  .map-container { height: 350px; }
+}

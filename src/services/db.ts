@@ -3,6 +3,7 @@ import type { SavedCollection, GenerationHistoryItem } from '../types'
 
 const bookmarksStore = createStore('gj-bookmarks', 'bookmarks')
 const historyStore = createStore('gj-history', 'history')
+const routeStore = createStore('gj-route', 'route')
 
 // ─── Bookmarks (individual landmark saves) ───
 
@@ -41,4 +42,15 @@ export async function getHistory(): Promise<GenerationHistoryItem[]> {
 
 export async function deleteHistoryItem(id: string): Promise<void> {
   await del(id, historyStore)
+}
+
+// ─── Route ───
+
+export async function getRoute(): Promise<number[]> {
+  const data = await get<number[]>('ids', routeStore)
+  return data ?? []
+}
+
+export async function setRoute(ids: number[]): Promise<void> {
+  await set('ids', ids, routeStore)
 }

@@ -1,0 +1,33 @@
+/* ─── Style Picker ─── */
+.style-section {
+  max-width: 900px; margin: 0 auto; padding: 0 24px 32px;
+}
+.style-section h2 {
+  font: 700 22px var(--font-heading); color: var(--forest); margin-bottom: 4px;
+}
+.style-section > p {
+  font-size: 14px; color: var(--ink-muted); margin-bottom: 16px;
+}
+
+.style-picker {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.style-pill {
+  padding: 8px 18px; border-radius: 20px; cursor: pointer;
+  font: 600 13px var(--font-body); letter-spacing: 0.3px;
+  border: 1px solid var(--gold); background: var(--cream); color: var(--ink);
+  transition: all 0.2s; white-space: nowrap;
+}
+.style-pill:hover { border-color: var(--sienna); color: var(--sienna); }
+.style-pill.active { background: var(--forest); color: #fff; border-color: var(--forest); }
+
+.style-preview {
+  background: var(--cream); border: 1px solid var(--gold);
+  border-radius: var(--radius); padding: 16px 20px;
+  box-shadow: var(--shadow-1);
+}
+.style-preview-label {
+  font: 600 12px var(--font-body); letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--sienna); margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
