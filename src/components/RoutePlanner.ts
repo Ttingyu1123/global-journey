@@ -1,5 +1,5 @@
 import { LANDMARKS } from '../data/landmarks'
-import { escapeHtml, $, copyToClipboard } from '../utils/html'
+import { escapeHtml, $ } from '../utils/html'
 import { getDirection } from '../utils/transition-directions'
 import { getRoute, setRoute } from '../services/db'
 import { showToast } from './Toast'

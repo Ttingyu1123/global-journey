@@ -1,7 +1,6 @@
 import { escapeHtml, $, copyToClipboard } from '../utils/html'
 import { hasApiKey } from '../services/api-key'
 import { generatePrompt, type GenerateResult } from '../services/gemini'
-import { saveToHistory } from '../services/db'
 import { showToast } from './Toast'
 
 export function initAiGenerator(): void {
@@ -33,15 +32,6 @@ async function handleGenerate(): Promise<void> {
 
   try {
     const parsed = await generatePrompt(text)
-    await saveToHistory({
-      id: crypto.randomUUID(),
-      input: text,
-      promptEn: parsed.promptEn ?? '',
-      promptZh: parsed.promptZh ?? '',
-      animationPrompt: parsed.animationPrompt ?? '',
-      style: '3d-relief',
-      createdAt: Date.now(),
-    })
     renderResult(result, text, parsed)
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Unknown error'

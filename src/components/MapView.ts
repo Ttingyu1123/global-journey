@@ -119,10 +119,3 @@ function buildMap(): void {
     }
   })
 }
-
-export function flyToLandmark(id: number): void {
-  const l = LANDMARKS.find(lm => lm.id === id)
-  if (l && map) {
-    map.flyTo([l.lat, l.lng], 10, { duration: 1.5 })
-  }
-}

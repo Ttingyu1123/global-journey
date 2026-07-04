@@ -27,24 +27,3 @@ export interface ContinentInfo {
   labelZh: string
 }
 
-export interface SavedCollection {
-  id: string
-  name: string
-  landmarkIds: number[]
-  createdAt: number
-}
-
-export interface GenerationHistoryItem {
-  id: string
-  input: string
-  promptEn: string
-  promptZh: string
-  animationPrompt: string
-  style: string
-  createdAt: number
-}
-
-export interface RouteItem {
-  landmarkId: number
-  order: number
-}
