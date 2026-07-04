@@ -1,7 +1,7 @@
 import { LANDMARKS } from '../data/landmarks'
-import { escapeHtml, $, copyToClipboard } from '../utils/html'
+import { escapeHtml, $ } from '../utils/html'
 import { getDirection } from '../utils/transition-directions'
-import { showToast } from './Toast'
+import { flashCopied } from './Toast'
 
 export function initVideoTransition(): void {
   renderSelects()
@@ -40,15 +40,6 @@ function handleGenerate(): void {
     </div>`
 
   $('videoResultCopy').addEventListener('click', () => {
-    const btn = $('videoResultCopy') as HTMLButtonElement
-    copyToClipboard(prompt).then(() => {
-      btn.classList.add('copied')
-      btn.textContent = 'Copied!'
-      showToast('Copied to clipboard')
-      setTimeout(() => {
-        btn.classList.remove('copied')
-        btn.textContent = 'Copy'
-      }, 2000)
-    })
+    flashCopied($('videoResultCopy'), prompt)
   })
 }

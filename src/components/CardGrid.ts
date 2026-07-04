@@ -1,9 +1,9 @@
 import { LANDMARKS } from '../data/landmarks'
-import { escapeHtml, $, copyToClipboard } from '../utils/html'
+import { escapeHtml, $, promptSection } from '../utils/html'
 import { getActiveContinent } from './ContinentBar'
 import { getActiveStyle, isDefaultStyle } from './StylePicker'
 import { composePrompt } from '../utils/style-composer'
-import { showToast } from './Toast'
+import { showToast, flashCopied } from './Toast'
 import { toggleBookmark, getBookmarks } from '../services/db'
 import type { Landmark } from '../types'
 
@@ -69,35 +69,10 @@ export async function renderCards(): Promise<void> {
       <div class="card-detail">
         <div class="card-detail-inner">
           <div class="card-detail-content">
-            ${useComposed ? `
-            <div class="prompt-section">
-              <div class="prompt-label">
-                ${escapeHtml(style.label)} Prompt${escapeHtml(styleLabel)}
-                <button class="copy-btn" data-copy-composed="${l.id}">Copy</button>
-              </div>
-              <div class="prompt-text">${escapeHtml(composedPrompt)}</div>
-            </div>` : ''}
-            <div class="prompt-section${useComposed ? ' prompt-section-original' : ''}">
-              <div class="prompt-label">
-                ${useComposed ? 'Original ' : ''}Image Prompt (EN)
-                <button class="copy-btn" data-copy="promptEn" data-id="${l.id}">Copy</button>
-              </div>
-              <div class="prompt-text">${escapeHtml(l.promptEn)}</div>
-            </div>
-            <div class="prompt-section">
-              <div class="prompt-label">
-                Chinese Translation
-                <button class="copy-btn" data-copy="promptZh" data-id="${l.id}">Copy</button>
-              </div>
-              <div class="prompt-text-zh">${escapeHtml(l.promptZh)}</div>
-            </div>
-            ${l.animationPrompt ? `<div class="prompt-section">
-              <div class="prompt-label">
-                Animation Transition
-                <button class="copy-btn" data-copy="animationPrompt" data-id="${l.id}">Copy</button>
-              </div>
-              <div class="prompt-text-anim">${escapeHtml(l.animationPrompt)}</div>
-            </div>` : ''}
+            ${useComposed ? promptSection(`${style.label} Prompt${styleLabel}`, `data-copy-composed="${l.id}"`, composedPrompt) : ''}
+            ${promptSection(`${useComposed ? 'Original ' : ''}Image Prompt (EN)`, `data-copy="promptEn" data-id="${l.id}"`, l.promptEn, 'prompt-text', useComposed ? ' prompt-section-original' : '')}
+            ${promptSection('Chinese Translation', `data-copy="promptZh" data-id="${l.id}"`, l.promptZh, 'prompt-text-zh')}
+            ${l.animationPrompt ? promptSection('Animation Transition', `data-copy="animationPrompt" data-id="${l.id}"`, l.animationPrompt, 'prompt-text-anim') : ''}
           </div>
         </div>
       </div>
@@ -116,13 +91,7 @@ function handleGridClick(e: Event): void {
     const id = Number(composedCopy.dataset.copyComposed)
     const landmark = LANDMARKS.find(l => l.id === id)
     if (landmark) {
-      const text = composePrompt(landmark, getActiveStyle())
-      copyToClipboard(text).then(() => {
-        composedCopy.classList.add('copied')
-        composedCopy.textContent = 'Copied!'
-        showToast('Copied to clipboard')
-        setTimeout(() => { composedCopy.classList.remove('copied'); composedCopy.textContent = 'Copy' }, 2000)
-      })
+      flashCopied(composedCopy, composePrompt(landmark, getActiveStyle()))
     }
     return
   }
@@ -134,15 +103,7 @@ function handleGridClick(e: Event): void {
     const id = Number(copyBtn.dataset.id)
     const landmark = LANDMARKS.find(l => l.id === id)
     if (landmark) {
-      copyToClipboard(String(landmark[field])).then(() => {
-        copyBtn.classList.add('copied')
-        copyBtn.textContent = 'Copied!'
-        showToast('Copied to clipboard')
-        setTimeout(() => {
-          copyBtn.classList.remove('copied')
-          copyBtn.textContent = 'Copy'
-        }, 2000)
-      })
+      flashCopied(copyBtn, String(landmark[field]))
     }
     return
   }
@@ -167,5 +128,13 @@ function handleGridClick(e: Event): void {
   const card = target.closest('.card') as HTMLElement | null
   if (card) {
     card.classList.toggle('open')
+  }
+}
+
+export function openCard(id: number): void {
+  const card = document.querySelector(`.card[data-id="${id}"]`) as HTMLElement | null
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    card.classList.add('open')
   }
 }

@@ -1,9 +1,9 @@
 import { STYLE_TEMPLATES } from '../data/styles'
 import type { StyleTemplate } from '../data/styles'
 import { LANDMARKS } from '../data/landmarks'
-import { escapeHtml, $, copyToClipboard } from '../utils/html'
+import { escapeHtml, $ } from '../utils/html'
 import { composePrompt } from '../utils/style-composer'
-import { showToast } from './Toast'
+import { flashCopied } from './Toast'
 
 let activeStyle: StyleTemplate = STYLE_TEMPLATES[0]
 let onChangeCallback: (() => void) | null = null
@@ -60,12 +60,6 @@ function updatePreview(): void {
     <div class="prompt-text">${escapeHtml(composed)}</div>
   `
   $('stylePreviewCopy').addEventListener('click', () => {
-    const btn = $('stylePreviewCopy') as HTMLButtonElement
-    copyToClipboard(composed).then(() => {
-      btn.classList.add('copied')
-      btn.textContent = 'Copied!'
-      showToast('Copied to clipboard')
-      setTimeout(() => { btn.classList.remove('copied'); btn.textContent = 'Copy' }, 2000)
-    })
+    flashCopied($('stylePreviewCopy'), composed)
   })
 }

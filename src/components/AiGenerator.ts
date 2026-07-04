@@ -1,7 +1,7 @@
-import { escapeHtml, $, copyToClipboard } from '../utils/html'
+import { escapeHtml, $, promptSection } from '../utils/html'
 import { hasApiKey } from '../services/api-key'
 import { generatePrompt, type GenerateResult } from '../services/gemini'
-import { showToast } from './Toast'
+import { showToast, flashCopied } from './Toast'
 
 export function initAiGenerator(): void {
   const btn = $('genBtn') as HTMLButtonElement
@@ -46,32 +46,15 @@ function renderResult(container: HTMLElement, input: string, parsed: GenerateRes
   container.innerHTML = `
     <div class="gen-result-card">
       <div style="font-weight:600;font-size:16px;margin-bottom:12px;color:var(--gold)">${escapeHtml(input)}</div>
-      <div class="prompt-section">
-        <div class="prompt-label">Image Prompt (EN) <button class="copy-btn" data-gen-copy="promptEn">Copy</button></div>
-        <div class="prompt-text">${escapeHtml(String(parsed.promptEn || ''))}</div>
-      </div>
-      <div class="prompt-section">
-        <div class="prompt-label">Chinese Translation <button class="copy-btn" data-gen-copy="promptZh">Copy</button></div>
-        <div class="prompt-text-zh">${escapeHtml(String(parsed.promptZh || ''))}</div>
-      </div>
-      ${parsed.animationPrompt ? `<div class="prompt-section">
-        <div class="prompt-label">Animation Transition <button class="copy-btn" data-gen-copy="animationPrompt">Copy</button></div>
-        <div class="prompt-text-anim">${escapeHtml(String(parsed.animationPrompt || ''))}</div>
-      </div>` : ''}
+      ${promptSection('Image Prompt (EN)', 'data-gen-copy="promptEn"', String(parsed.promptEn || ''))}
+      ${promptSection('Chinese Translation', 'data-gen-copy="promptZh"', String(parsed.promptZh || ''), 'prompt-text-zh')}
+      ${parsed.animationPrompt ? promptSection('Animation Transition', 'data-gen-copy="animationPrompt"', String(parsed.animationPrompt || ''), 'prompt-text-anim') : ''}
     </div>`
 
   container.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const field = (btn as HTMLElement).dataset.genCopy as keyof GenerateResult
-      copyToClipboard(String(parsed[field] || '')).then(() => {
-        btn.classList.add('copied')
-        btn.textContent = 'Copied!'
-        showToast('Copied to clipboard')
-        setTimeout(() => {
-          btn.classList.remove('copied')
-          btn.textContent = 'Copy'
-        }, 2000)
-      })
+      flashCopied(btn as HTMLElement, String(parsed[field] || ''))
     })
   })
 }

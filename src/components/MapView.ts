@@ -5,6 +5,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { LANDMARKS } from '../data/landmarks'
 import { escapeHtml, $ } from '../utils/html'
+import { openCard } from './CardGrid'
 import type { ContinentKey, Landmark } from '../types'
 
 declare module 'leaflet' {
@@ -110,12 +111,7 @@ function buildMap(): void {
   map.getContainer().addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('.gj-popup-btn') as HTMLElement | null
     if (btn) {
-      const id = btn.dataset.goto
-      const card = document.querySelector(`.card[data-id="${id}"]`) as HTMLElement | null
-      if (card) {
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        card.classList.add('open')
-      }
+      openCard(Number(btn.dataset.goto))
     }
   })
 }
