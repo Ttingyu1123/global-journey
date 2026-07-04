@@ -1,4 +1,5 @@
 import './styles/index.css'
+import { inject } from '@vercel/analytics'
 import { loadApiKey } from './services/api-key'
 import { renderContinentBar, onContinentChange } from './components/ContinentBar'
 import { renderCards, setSearchQuery, initBookmarks } from './components/CardGrid'
@@ -11,6 +12,7 @@ import { initRoutePlanner } from './components/RoutePlanner'
 import { $ } from './utils/html'
 
 async function init(): Promise<void> {
+  inject()
   loadApiKey()
   initKeyPanel()
   initMap()
